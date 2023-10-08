@@ -5,7 +5,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import pickle
-import sys
 
 # Homebank app for some reason does not want to load russian characters correctly
 # So here is a rule to transliterate them
