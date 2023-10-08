@@ -55,15 +55,6 @@ chrome_options.add_experimental_option("prefs", prefs)
 chrome_options.add_argument(f"user-data-dir={profile_path}")
 
 if __name__ == "__main__":
-    # Get the full path of the currently running script
-    script_path = os.path.abspath(__file__)
-
-    # If you only want the directory containing the script, use:
-    script_dir = os.path.dirname(script_path)
-
-    print("Script Path:", script_path)
-    print("Script Directory:", script_dir)
-
     # Check if the required folders do not exist and create them
     if not os.path.exists(profile_path):
         os.makedirs(profile_path)
