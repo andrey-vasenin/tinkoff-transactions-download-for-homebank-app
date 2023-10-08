@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import pickle
 
+
 # Homebank app for some reason does not want to load russian characters correctly
 # So here is a rule to transliterate them
 def transliterate_russian_to_latin(text):
@@ -35,12 +36,12 @@ tinkoff_transactions_page = "https://www.tinkoff.ru/events/feed/" # Taknoff page
 btn_text = "Выгрузить все операции в OFX" # Name of the button to be pressed eventually
 
 # Define paths
-current_folder = "C:\\Users\\dfavadf\\Coding\\Tinkoff Update"
+# Get the full path of the currently running script
+script_path = os.path.abspath(__file__)
+current_folder = os.path.dirname(script_path)
 CHROME_DRIVER_PATH =  os.path.join(current_folder, 'chromedriver.exe')
 profile_path = os.path.join(current_folder, 'profile') # specify the directory to keep you new chrome profile specific for this task
 download_dir = os.path.join(current_folder, 'downloads')  # specify the directory where you want to download the file
-cookies_dir = os.path.join(current_folder, 'cookies') # specify a directory to keep cookies file
-cookies_path = os.path.join(cookies_dir, 'cookies.pkl') # cookies filename saved in cookies_dir
 
 # Set up Chrome preferences
 chrome_options = webdriver.ChromeOptions()
@@ -54,13 +55,20 @@ chrome_options.add_experimental_option("prefs", prefs)
 chrome_options.add_argument(f"user-data-dir={profile_path}")
 
 if __name__ == "__main__":
+    # Get the full path of the currently running script
+    script_path = os.path.abspath(__file__)
+
+    # If you only want the directory containing the script, use:
+    script_dir = os.path.dirname(script_path)
+
+    print("Script Path:", script_path)
+    print("Script Directory:", script_dir)
+
     # Check if the required folders do not exist and create them
     if not os.path.exists(profile_path):
         os.makedirs(profile_path)
     if not os.path.exists(download_dir):
         os.makedirs(download_dir)
-    if not os.path.exists(cookies_dir):
-        os.makedirs(cookies_dir)
     # Find existing .ofx files to be able to detect a downloaded .ofx file later
     existing_ofx_files = set([f for f in os.listdir(download_dir) if f.endswith('.ofx')])
 
@@ -70,14 +78,6 @@ if __name__ == "__main__":
     # STEP 1. Log in
     # Navigate to the bank's login page
     browser.get(tinkoff_login_url)
-    # Check if cookies exist and load them
-    if os.path.exists(cookies_path):
-        with open(cookies_path, 'rb') as file:
-            cookies = pickle.load(file)
-            for cookie in cookies:
-                browser.add_cookie(cookie)
-        # Refresh the page after loading cookies to update the session
-        browser.refresh()
     print("Entered")
 
     # STEP 2. After logging in, wait for the main page to load
@@ -113,11 +113,6 @@ if __name__ == "__main__":
     print("Downloaded:", downloaded_file)
 
     # STEP 5. Close the browser
-    # Save cookies for the next session
-    with open(cookies_path, 'wb') as file:
-        pickle.dump(browser.get_cookies(), file)
-
-    # Close the browser after the task are done
     browser.quit()
 
     # Transliterate the downloaded OFX file
